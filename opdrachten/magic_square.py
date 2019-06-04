@@ -1,7 +1,7 @@
 import numpy as np
 
-magicSq1 = [[8,0,0],[0,0,9],[0,0,2]]
-magicSq2 = [[5,0,0],[0,0,4],[0,0,6]]
+magicSq = [[8, 0, 0], [0, 0, 9], [0, 0, 2]]
+
 
 def hor_loop(magcsq):
     aMatrix = []
@@ -23,7 +23,7 @@ def hor_loop(magcsq):
                     row.append(0)
         row.append(-1)
         aMatrix.append(row)
-        bArray.append(0 - totaal)
+        bArray.append(15 - totaal)
     info = [aMatrix, bArray]
     return info
 
@@ -48,7 +48,7 @@ def ver_loop(magcsq):
                     row.append(0)
         row.append(-1)
         aMatrix.append(row)
-        bArray.append(0 - totaal)
+        bArray.append(15 - totaal)
     info = [aMatrix, bArray]
     return info
 
@@ -72,7 +72,7 @@ def digLR_loop(magcsq):
                 row.append(0)
     row.append(-1)
     aMatrix.append(row)
-    bArray.append(0 - totaal)
+    bArray.append(15 - totaal)
     info = [aMatrix, bArray]
     return info
 
@@ -98,14 +98,14 @@ def digRL_loop(magcsq):
         counter -= 1
     row.append(-1)
     aMatrix.append(row)
-    bArray.append(0 - totaal)
+    bArray.append(15 - totaal)
     info = [aMatrix, bArray]
     return info
+
 
 def get_matrix_array(magcsq):
     matrix = []
     array = []
-    row = [0, 0, 0, 0, 3, 0, 0, 0, 0, -1]
     hor = hor_loop(magcsq)
     ver = ver_loop(magcsq)
     digLR = digLR_loop(magcsq)
@@ -113,30 +113,59 @@ def get_matrix_array(magcsq):
 
     for i in range(0, 3):
         matrix.append(hor[0][i])
-        array.append(hor[1][i])
+        array.append([hor[1][i]])
     for i in range(0, 3):
         matrix.append(ver[0][i])
-        array.append(ver[1][i])
+        array.append([ver[1][i]])
     matrix.append(digLR[0][0])
-    array.append(digLR[1][0])
+    array.append([digLR[1][0]])
     matrix.append(digRL[0][0])
-    array.append(digRL[1][0])
-    matrix.append(row)
-    matrix.append(row)
-    array.append(0)
-    array.append(0)
+    array.append([digRL[1][0]])
     infoList = [matrix, array]
     return infoList
 
 
-infoList = get_matrix_array(magicSq1)
+def getSolution(matrix, ant):
+    X = ["x1= ", "x2= ", "x3= ", "x4= ", "x5= ", "x6= ", "x7= ", "x8= ", "x9= "]
+    sq = []
+    for j in range(0, 3):
+        for k in range(0, 3):
+            sq.append(matrix[j][k])
+
+    for i in range(0, 9):
+        if sq[i] != 0:
+            X[i] += str(sq[i])
+        else:
+            X[i] += str(int(np.round(ant[i])))
+    return X
+
+
+def printAnt(ant):
+    a = ""
+    for i in range(0, 9):
+        a += ant[i] + " "
+        if i == 2 or i == 5 or i == 8:
+            print(a)
+            a = ""
+
+
+infoList = get_matrix_array(magicSq)
 
 A = infoList[0]
 b = infoList[1]
+
+print(np.matrix(A))
+print(np.matrix(b))
+A = np.matrix(A)
+b = np.matrix(b)
+
 # inverse of A
-invA = np.linalg.inv(A)
-# som A en b voor x:
-x = A * b
+invA = np.linalg.pinv(A)
 
-print(x)
+# bereken invA * b = x
+x = np.squeeze(np.asarray(np.dot(invA, b)))
+ant = getSolution(magicSq, x)
 
+# print antwoord
+print()
+printAnt(ant)
