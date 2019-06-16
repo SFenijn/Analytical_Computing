@@ -168,4 +168,3 @@ ant = getSolution(magicSq, x)
 
 # print antwoord
 print()
-printAnt(ant)
